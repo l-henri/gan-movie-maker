@@ -1,10 +1,11 @@
 # client functions for interacting with the ganbreeder api
 import requests
 import json
+import numpy as np
 
 def login(username, password):
     def get_sid():
-        url = 'https://ganbreeder.app/login'
+        url = 'https://artbreeder.com/login'
         r = requests.get(url)
         r.raise_for_status()
         for c in r.cookies:
@@ -13,7 +14,7 @@ def login(username, password):
                 return c.value
 
     def login_auth(sid, username, password):
-        url = 'https://ganbreeder.app/login'
+        url = 'https://artbreeder.com/login'
         headers = {
                 'Content-Type': 'application/json',
                 }
@@ -32,30 +33,32 @@ def login(username, password):
 
     sid = get_sid()
     login_auth(sid, username, password)
-    # print("Out login")
     return sid
 
+def parse_info_dict(info):
+    keyframe = dict()
+    keyframe['truncation'] = np.float(info['truncation'])
+    keyframe['latent'] = np.asarray(info['latent'])
+    classes = info['classes']
+    keyframe['label'] = np.zeros(1000)# length of label ("classes") vector: 1000
+    for c in info['classes']:
+        # artbreeder class entries look like [index, value] where index < 1000
+        keyframe['label'][c[0]] = c[1]
+    return keyframe
+
 def get_info(sid, key):
-    # print("in get_info, key " + key)
     if sid == '':
         raise Exception('Cannot get info; session ID not defined. Be sure to login() first.')
     cookies = {
             'connect.sid': sid
             }
-    url = 'http://ganbreeder.app/info?k='+key
-    print(url)
-    r = requests.get(url, cookies=cookies, timeout=5)
+    r = requests.get('http://artbreeder.com/info?k='+str(key), cookies=cookies)
     r.raise_for_status()
-    # print("out get_info")
-    with open('jsonStore/'+key+'.json', 'w') as outfile:
-        json.dump(r.json(), outfile)
-    # json.dumps(r.json(),"jsonStore")
-    return(r.json())
+    return parse_info_dict(r.json())
 
 def get_info_batch(username, password, keys):
     l = list()
     sid = login(username, password)
     for key in keys:
         l.append(get_info(sid, key))
-    # print("Out get_info_batch")
     return l

@@ -22,7 +22,7 @@ if not os.path.exists(workdir):
 
 def main():
 	print("Starting program")
-	keysList = ["ef5beb9c47ff5e3abb1b9975", "ca02a5106c5e238194f6e8c7"]
+	keysList = ["215d3c08abb5280283b9afc6", "5baefe73a9bc418f8b8678ee"]
 	durations = [1, 1]
 
 	# Calculating frame number from transition duration
@@ -40,13 +40,13 @@ def main():
 		# Creating arguments
 		print(frameNumberPerDuration[i])
 		if i == len(keysList)-1:
-			arguments.append("-k" + key )
-			arguments.append("-l" + keysList[0])
+			arguments.append("-k '" + key + "' '" + keysList[0] + "'")
+			# arguments.append("-l" + keysList[0])
 			arguments.append("-n"+str(frameNumberPerDuration[i]))
 			# arguments.append("-o"+folderNames[i]) 
 		else:
-			arguments.append("-k" + key)
-			arguments.append("-l" + keysList[i+1])
+			arguments.append("-k" + key + " " + keysList[i+1])
+			# arguments.append("-l" + keysList[i+1])
 			arguments.append("-n"+str(frameNumberPerDuration[i]))
 			# arguments = ["-o outpout", "-uhenri.lieutaud@gmail.com", "-pAB6hzKSXYBf7", "-k" + key , "-l" + keysList[i+1]]
 		# arguments.append("-o"+folderNames[i]) 

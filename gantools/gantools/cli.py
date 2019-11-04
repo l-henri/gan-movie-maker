@@ -16,10 +16,11 @@ def handle_args(argv=None):
             )
     # load from ganbreeder
     ganbreeder_group = parser.add_argument_group(title='GANbreeder login')
-    ganbreeder_group.add_argument('-u', '--username', type=str, help='Ganbreeder account email address/username.')
-    ganbreeder_group.add_argument('-p', '--password', type=str,  help='Ganbreeder account password.')
-    ganbreeder_group.add_argument('-k', '--key1', type=str, help='Ganbreeder key 1.')
-    ganbreeder_group.add_argument('-l', '--key2', type=str, help='Ganbreeder key 2.')
+    ganbreeder_group.add_argument('-u', '--username', help='Ganbreeder account email address/username.')
+    ganbreeder_group.add_argument('-p', '--password', help='Ganbreeder account password.')
+    # ganbreeder_group.add_argument('-k', '--key1', type=str, help='Ganbreeder key 1.')
+    # ganbreeder_group.add_argument('-l', '--key2', type=str, help='Ganbreeder key 2.')
+    ganbreeder_group.add_argument('-k', '--keys', nargs='+', help='Ganbreeder keys.')
     # ganbreeder_group.add_argument('-l', '--key2', nargs='+', help='Ganbreeder key 2.')
     parser.add_argument('-n', '--nframes', metavar='N', type=int, help='Total number of frames in the final animation.', default=10)
     parser.add_argument('-b', '--nbatch', metavar='N', type=int, help='Number of frames in each \'batch\' \
@@ -32,35 +33,21 @@ def handle_args(argv=None):
     group_loop.add_argument('--loop', dest='loop', action='store_true', default=True, help='Loop the animation.')
     group_loop.add_argument('--no-loop', dest='loop', action='store_false', help='Don\'t loop the animation.')
     args = parser.parse_args(argv)
-    args.keys = [args.key1, args.key2]
+    # args.keys = [args.key1, args.key2]
 
     # validate args
     if not (lambda l: (not any(l)) or all(l))(\
             [e is not None and e is not [] for e in [args.username, args.password, args.keys]]):
         parser.error('The --keys argument requires a --username and --password to login to ganbreeder')
         sys.exit(1)
-    # print(args)
     return args
 
 # create entrypoints for cli tools
 def main(arguments=None):
-
-    args = handle_args(arguments)
-    # print(args)
+    args = handle_args()
     # get animation keyframes from ganbreeder
     print('Downloading keyframe info from ganbreeder...')
-    
-    
-    # print(args.keys)
     keyframes = ganbreeder.get_info_batch(args.username, args.password, args.keys)
-   
-    ## Henri 
-    # for element in keyframes:
-    #     for field in element:
-    #         print(field)
-    # print(len(keyframes[0]['vector']))
-    # return
-    ## /Henri
 
     # interpolate path through input space
     print('Interpolating path through input space...')
@@ -71,16 +58,12 @@ def main(arguments=None):
                 batch_size=args.nbatch,
                 interp_method=args.interp,
                 loop=args.loop)
-        # print("len label_seq " + str(len(label_seq)))
-        # for element in label_seq:
-        #     print("len elem " + str(len(element)))
-        # print(label_seq[0][0])
-        print(truncation_seq)
     except ValueError as e:
         print(e)
         print('ERROR: Interpolation failed. Make sure you are using at least 3 keys (4 if --no-loop is enabled)')
         print('If you would like to use fewer keys, try using the --interp linear argument')
         return 1
+
     # sample the GAN
     print('Loading bigGAN...')
     gan = biggan.BigGAN()
@@ -95,4 +78,4 @@ def main(arguments=None):
     return 0
 
 if __name__ == '__main__':
-    sys.exit(main(argv=None))
+    sys.exit(main())

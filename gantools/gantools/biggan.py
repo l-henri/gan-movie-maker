@@ -1,27 +1,28 @@
 # methods for setting up and interacting with biggan
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tensorflow_hub as hub
 import numpy as np
 from itertools import cycle
-import json
+
+
+#session = InteractiveSession(config=config)
 
 # Plus réaliste
-MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-deep-512/1'
+MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-deep-512/2'
 # Plus éthéré
 # MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-512/2'
-        # keyFrameJson = {}
-        # keyFrameJson["z_seq"] = z_seq
-        # keyFrameJson["label_seq"] = label_seq
-        # keyFrameJson["truncation_seq"] = truncation_seq
-        
-        # with open("dump", 'w') as f:
-        #     json.dump(keyFrameJson, f)
-
 
 class BigGAN(object):
     def __init__(self, module_path=MODULE_PATH):
         tf.reset_default_graph()
         print('Loading BigGAN module from:', module_path)
+
+        #-----------------------------------------------------------------
+        # fix "RuntimeError: Exporting/importing meta graphs is not
+        # supported when eager execution is enabled." error when importing
+        # the tfhub module
+        tf.disable_eager_execution()
+        #-----------------------------------------------------------------
         module = hub.Module(module_path)
         self.inputs = {k: tf.placeholder(v.dtype, v.get_shape().as_list(), k)
                 for k, v in module.get_input_info_dict().items()}
@@ -34,7 +35,15 @@ class BigGAN(object):
 
         # initialize/instantiate tf variables
         initializer = tf.global_variables_initializer()
-        self.sess = tf.Session()
+
+        #-----------------------------------------------------------------
+        # fix "could not create cudnn handle" error
+        # see: https://github.com/tensorflow/tensorflow/issues/24496
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        #-----------------------------------------------------------------
+
+        self.sess = tf.Session(config=config)
         self.sess.run(initializer)
 
     # NOTE: use save callback to save images once per batch. return type changes to None.
@@ -61,7 +70,6 @@ class BigGAN(object):
         if save_callback is None:
             ims = np.concatenate(ims, axis=0)
             assert ims.shape[0] == num
-
             return ims
         else:
             return None

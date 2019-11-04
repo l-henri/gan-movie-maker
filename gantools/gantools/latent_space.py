@@ -44,7 +44,7 @@ def sequence_keyframes(keyframes, num_frames, batch_size=1, interp_method='linea
         keyframes.append(keyframes[0])# seq returns to start
 
     truncation_keys = np.asarray([keyframe['truncation'] for keyframe in keyframes])
-    z_keys = np.asarray([np.asarray(keyframe['vector']) * keyframe['truncation'] for keyframe in keyframes])
+    z_keys = np.asarray([np.asarray(keyframe['latent']) * keyframe['truncation'] for keyframe in keyframes])
     label_keys = np.asarray([keyframe['label'] for keyframe in keyframes])
 
     z_seq = interp_fn(z_keys, num_frames)
