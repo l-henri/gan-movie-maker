@@ -1,6 +1,7 @@
 # client functions for interacting with the ganbreeder api
 import requests
 import json
+import os
 import numpy as np
 
 def login(username, password):
@@ -47,6 +48,14 @@ def parse_info_dict(info):
     return keyframe
 
 def get_info(sid, key):
+    # Look for key in keystore
+    if os.path.exists("jsonStore/%s.json" % key):
+        print("This key has already been downloaded")
+        with open("jsonStore/%s.json" % key) as json_file:
+            return parse_info_dict(json.load(json_file))
+
+    # If not found, retrieve from website
+
     if sid == '':
         raise Exception('Cannot get info; session ID not defined. Be sure to login() first.')
     cookies = {
@@ -56,6 +65,11 @@ def get_info(sid, key):
     r.raise_for_status()
     print("For key %s, we retrieved the following data:" % key)
     print(r.json())
+
+    # Save key for future use
+    with open("jsonStore/%s.json" % key, 'w') as f:
+        json.dump(r.json(), f)
+
     return parse_info_dict(r.json())
 
 def get_info_batch(username, password, keys):

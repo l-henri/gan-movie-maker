@@ -76,6 +76,9 @@ def main():
 
 
 
+def loadSecretData():
+	with open("secretData.json") as json_file:
+            return parse_info_dict(json.load(json_file))
 
 
 if __name__ == '__main__':

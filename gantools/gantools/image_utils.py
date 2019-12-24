@@ -27,10 +27,7 @@ class ImageSaver(object):
                     self.prefix + str(self.index).zfill(4) + '.' + self.image_format.lower()
                     )
             image = PIL.Image.fromarray(im)
-            # with open("dump.json", 'w') as f:
-            #     json.dump(im, f)
-            # print('Printing im')
-            # print(im)
+
             image.save(full_path, format=self.image_format, quality=self.quality)
             self.index += 1
 
