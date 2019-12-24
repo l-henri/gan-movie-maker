@@ -54,6 +54,8 @@ def get_info(sid, key):
             }
     r = requests.get('http://artbreeder.com/info?k='+str(key), cookies=cookies)
     r.raise_for_status()
+    print("For key %s, we retrieved the following data:" % key)
+    print(r.json())
     return parse_info_dict(r.json())
 
 def get_info_batch(username, password, keys):

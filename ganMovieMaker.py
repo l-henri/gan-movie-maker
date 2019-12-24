@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./gantools/gantools')
-import cli as gaanBreederCli
+import cli as ganBreederCli
 import os
 import shutil
 import ffmpeg
@@ -22,7 +22,7 @@ if not os.path.exists(workdir):
 
 def main():
 	print("Starting program")
-	keysList = ["215d3c08abb5280283b9afc6", "5baefe73a9bc418f8b8678ee"]
+	keysList = ["1664c75e5b4856155775f062", "97b567c44a077f715d160e95"]
 	durations = [1, 1]
 
 	# Calculating frame number from transition duration
@@ -38,30 +38,33 @@ def main():
 	for key in keysList:
 
 		# Creating arguments
-		print(frameNumberPerDuration[i])
+		# print(frameNumberPerDuration[i])
 		if i == len(keysList)-1:
-			arguments.append("-k '" + key + "' '" + keysList[0] + "'")
-			# arguments.append("-l" + keysList[0])
+			# arguments.append("-k '" + key + "' '" + keysList[0] + "'")
+			arguments.append("-k" + key )
+			arguments.append("-l" + keysList[0])
 			arguments.append("-n"+str(frameNumberPerDuration[i]))
 			# arguments.append("-o"+folderNames[i]) 
 		else:
-			arguments.append("-k" + key + " " + keysList[i+1])
-			# arguments.append("-l" + keysList[i+1])
+			# arguments.append("-k" + key + " " + keysList[i+1])
+			arguments.append("-k" + key )
+			arguments.append("-l" + keysList[i+1])
 			arguments.append("-n"+str(frameNumberPerDuration[i]))
 			# arguments = ["-o outpout", "-uhenri.lieutaud@gmail.com", "-pAB6hzKSXYBf7", "-k" + key , "-l" + keysList[i+1]]
 		# arguments.append("-o"+folderNames[i]) 
 		arguments.append("-P"+ str(i).zfill(4)) 
 		i += 1
-		print(arguments)
-		# Vérification des arguments
-		args = gaanBreederCli.handle_args(arguments)
-		print(args)
-		
+		# print(arguments)
+		# # Vérification des arguments
+		# args = ganBreederCli.handle_args(arguments)
+		# print(args)
+	
 		# Appel de la fonction principale		
-		gaanBreederCli.main(arguments)
+		ganBreederCli.main(arguments)
 
 
-	stream = ffmpeg.input(workdir+ '/*.png', pattern_type='glob', framerate=24)
+	## Saving as movie
+	stream = ffmpeg.input(workdir+ '/*.png', pattern_type='glob', framerate=movieFrameRate)
 	#stream = ffmpeg.framerate(24)
 	stream = ffmpeg.output(stream, outputVideo)
 	ffmpeg.run(stream)

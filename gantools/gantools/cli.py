@@ -20,8 +20,8 @@ def handle_args(argv=None):
     ganbreeder_group.add_argument('-p', '--password', help='Ganbreeder account password.')
     # ganbreeder_group.add_argument('-k', '--key1', type=str, help='Ganbreeder key 1.')
     # ganbreeder_group.add_argument('-l', '--key2', type=str, help='Ganbreeder key 2.')
-    ganbreeder_group.add_argument('-k', '--keys', nargs='+', help='Ganbreeder keys.')
-    # ganbreeder_group.add_argument('-l', '--key2', nargs='+', help='Ganbreeder key 2.')
+    ganbreeder_group.add_argument('-k', '--key1', nargs='+', help='Ganbreeder keys.')
+    ganbreeder_group.add_argument('-l', '--key2', nargs='+', help='Ganbreeder key 2.')
     parser.add_argument('-n', '--nframes', metavar='N', type=int, help='Total number of frames in the final animation.', default=10)
     parser.add_argument('-b', '--nbatch', metavar='N', type=int, help='Number of frames in each \'batch\' \
             (note: the truncation value can only change once per batch. Don\'t fuck with this unless you know \
@@ -33,7 +33,7 @@ def handle_args(argv=None):
     group_loop.add_argument('--loop', dest='loop', action='store_true', default=True, help='Loop the animation.')
     group_loop.add_argument('--no-loop', dest='loop', action='store_false', help='Don\'t loop the animation.')
     args = parser.parse_args(argv)
-    # args.keys = [args.key1, args.key2]
+    args.keys = [args.key1[0], args.key2[0]]
 
     # validate args
     if not (lambda l: (not any(l)) or all(l))(\
@@ -44,8 +44,9 @@ def handle_args(argv=None):
 
 # create entrypoints for cli tools
 def main(arguments=None):
-    args = handle_args()
+    args = handle_args(arguments)
     # get animation keyframes from ganbreeder
+    print(args)
     print('Downloading keyframe info from ganbreeder...')
     keyframes = ganbreeder.get_info_batch(args.username, args.password, args.keys)
 

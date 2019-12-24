@@ -8,9 +8,9 @@ from itertools import cycle
 #session = InteractiveSession(config=config)
 
 # Plus réaliste
-MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-deep-512/2'
+# MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-deep-512/2'
 # Plus éthéré
-# MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-512/2'
+MODULE_PATH = 'https://tfhub.dev/deepmind/biggan-512/2'
 
 class BigGAN(object):
     def __init__(self, module_path=MODULE_PATH):
