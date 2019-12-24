@@ -4,6 +4,8 @@ import cli as ganBreederCli
 import os
 import shutil
 import ffmpeg
+import json 
+
 
 movieFrameRate = 5
 workdir = "output/01_test_global"
@@ -22,7 +24,7 @@ if not os.path.exists(workdir):
 
 def main():
 	print("Starting program")
-	keysList = ["1664c75e5b4856155775f062", "97b567c44a077f715d160e95"]
+	keysList = ["1664c75e5b4856155775f062", "9556db302ee5a7b2c04907ea"]
 	durations = [1, 1]
 
 	# Calculating frame number from transition duration
@@ -31,7 +33,8 @@ def main():
 		frameNumberPerDuration.append(int(movieFrameRate*duration))
 
 	folderNames = []
-	arguments = ["-uhenri.lieutaud@gmail.com", "-pAB6hzKSXYBf7", "--no-loop", "-o"+workdir]
+	secretData = loadSecretData()
+	arguments = ["-u%s" % secretData["username"], "-p%s" % secretData["password"], "--no-loop", "-o"+workdir]
 	i = 0
 
 	# Appel de la fonction sur chaque objet
@@ -58,7 +61,6 @@ def main():
 		# # Vérification des arguments
 		# args = ganBreederCli.handle_args(arguments)
 		# print(args)
-	
 		# Appel de la fonction principale		
 		ganBreederCli.main(arguments)
 
@@ -78,7 +80,7 @@ def main():
 
 def loadSecretData():
 	with open("secretData.json") as json_file:
-            return parse_info_dict(json.load(json_file))
+		return json.load(json_file)
 
 
 if __name__ == '__main__':

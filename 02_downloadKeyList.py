@@ -11,11 +11,11 @@ import ganMovieMaker
 
 def main():
 	print("Starting program")
+	print('Downloading keyframe info from ganbreeder...')
 	keysList = ["1664c75e5b4856155775f062", "97b567c44a077f715d160e95"]
-	username = "henri.lieutaud@gmail.com"
-	password = "AB6hzKSXYBf7"
+	secretData = ganMovieMaker.loadSecretData()
 
-	ganbreeder.get_info_batch(username, password, keysList)
+	ganbreeder.get_info_batch(secretData["username"], secretData["password"], keysList)
 
 
 if __name__ == '__main__':

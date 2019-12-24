@@ -49,6 +49,12 @@ def main(arguments=None):
     print(args)
     print('Downloading keyframe info from ganbreeder...')
     keyframes = ganbreeder.get_info_batch(args.username, args.password, args.keys)
+    # for keyframe in keyframes:
+    #     print(keyframe["truncation"])
+    #     print(len(keyframe["latent"]))
+    #     print(len(keyframe["label"]))
+    #     for element in keyframe:
+    #         print(element)
 
     # interpolate path through input space
     print('Interpolating path through input space...')
@@ -64,7 +70,9 @@ def main(arguments=None):
         print('ERROR: Interpolation failed. Make sure you are using at least 3 keys (4 if --no-loop is enabled)')
         print('If you would like to use fewer keys, try using the --interp linear argument')
         return 1
-
+    # print(len(z_seq[0]))
+    # print(len(label_seq[0]))
+    # print(truncation_seq)
     # sample the GAN
     print('Loading bigGAN...')
     gan = biggan.BigGAN()
